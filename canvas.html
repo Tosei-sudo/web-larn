@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+<script>
+    async function render() {
+        let range_x = [999, -999];
+        let range_y = [999, -999];
+
+        let result = await fetch('./canvas.geojson');
+        geojson = await result.json();
+        geojson.features.forEach((feature) => {
+            feature.geometry.coordinates.forEach((ring) => {
+                ring.forEach((coordinate) => {
+                    let x = coordinate[0];
+                    let y = coordinate[1];
+                    range_x[0] = Math.min(range_x[0], x);
+                    range_x[1] = Math.max(range_x[1], x);
+                    range_y[0] = Math.min(range_y[0], y);
+                    range_y[1] = Math.max(range_y[1], y);
+                });
+            });
+        });
+
+        const canvas = document.getElementById('canvas');
+
+        canvas.width = 1600;
+        canvas.height = canvas.width / ((range_x[1] - range_x[0]) / (range_y[1] - range_y[0]));
+
+        const ctx = canvas.getContext('2d');
+
+        const x_size = (range_x[1] - range_x[0]) / canvas.width;
+        const y_size = (range_y[1] - range_y[0]) / canvas.height;
+
+        geojson.features.forEach((feature) => {
+            feature.geometry.coordinates.forEach((ring) => {
+                ctx.beginPath();
+                ring.forEach((coordinate) => {
+                    let x = coordinate[0];
+                    let y = coordinate[1];
+                    let px = (x - range_x[0]) / (x_size);
+                    let py = canvas.height - (y - range_y[0]) / (y_size);
+                    ctx.lineTo(px, py);
+                });
+                ctx.stroke();
+                if (feature.properties.name == "北海道") {
+                    random_rgb = () => {
+                        return Math.floor(Math.random() * 256);
+                    }
+                    ctx.fillStyle = 'rgba(' + String(random_rgb()) + ', ' + String(random_rgb()) + ', ' + String(random_rgb()) + ', 0.5)';
+                    ctx.fill();
+                }
+            });
+        });
+        let footprint = [[139.877638888889, 35.3353055555556], [139.877944444444, 35.3149166666667], [139.91575, 35.3356388888889], [139.916, 35.31525], [139.877638888889, 35.3353055555556]];
+
+        ctx.beginPath();
+        footprint.forEach((coordinate) => {
+            let x = coordinate[0];
+            let y = coordinate[1];
+            let px = (x - range_x[0]) / (x_size);
+            let py = canvas.height - (y - range_y[0]) / (y_size);
+            ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+        ctx.fillStyle = 'rgb(255, 0, 0)';
+        ctx.fill();
+    }
+
+    window.onload = render;
+
+</script>
+<style>
+    #canvas {
+        border: 1px solid black;
+        width: 1600px;
+        padding: 6px;
+    }
+</style>
+
+</html>

@@ -1,0 +1,68 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.radar-flex-wrap {
+    display: flex;
+    height: 100vh;
+}
+
+.commands {
+    padding: 0 12px;
+    width: calc(100vw - 800px);
+    overflow: auto;
+}
+
+#canvas {
+    border: 1px solid black;
+    height: 800px;
+    width: 800px;
+}
+
+/* media selectorで800以下は縦ならび */
+@media screen and (max-width: 800px) {
+    .radar-flex-wrap {
+        flex-direction: column;
+        height: auto;
+    }
+
+    #canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    .commands {
+        width: 100%;
+    }
+}
+
+.enemy {
+    color: red;
+}
+
+.ally {
+    color: blue;
+}
+
+.weapon-name-selector {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.weapon-name {
+    padding: 5px;
+    border: 1px solid #7e7e7e;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    width: 25%;
+    text-align: center;
+    background-color: #adadad;
+}
+
+.weapon-name.active {
+    background-color: #c2cbff;
+}
